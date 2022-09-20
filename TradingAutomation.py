@@ -99,24 +99,40 @@ def color_column(last_idx):
     blue_end_prev=[]
     blue_end=[]
 
-    for idx in range(1, last_idx):  # 중복되는 내용 쳐내기
-        if df.loc[idx,'Price'] > df.loc[idx,'LS_B'] > df.loc[idx,'Open'] > df.loc[idx,'LS_A'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_A'] > df.loc[idx,'Open'] > df.loc[idx,'LS_B'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_B'] > df.loc[idx,'LS_A'] > df.loc[idx,'Open'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_A'] > df.loc[idx,'LS_B'] > df.loc[idx,'Open'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_B'] > df.loc[idx-1,'Price'] > df.loc[idx,'LS_A'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_B'] > df.loc[idx,'LS_A'] > df.loc[idx-1,'Price'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_A'] > df.loc[idx-1,'Price'] > df.loc[idx,'LS_B'] or\
-            df.loc[idx,'Price'] > df.loc[idx,'LS_A'] > df.loc[idx,'LS_B'] > df.loc[idx-1,'Price']:
+    for idx in range(1, last_idx):
+        if (df.loc[idx,"LS_B"] < df.loc[idx,"Open"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"Open"] < df.loc[idx,"LS_B"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"LS_B"] < df.loc[idx,"LS_A"] < df.loc[idx,"Open"] < df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"LS_B"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] < df.loc[idx,"Open"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"LS_A"] < df.loc[idx,"Open"] < df.loc[idx,"LS_B"] < df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"Open"] < df.loc[idx,"LS_A"] < df.loc[idx,"LS_B"] < df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"LS_A"] < df.loc[idx,"LS_B"] < df.loc[idx,"Open"] < df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"LS_A"] < df.loc[idx,"LS_B"] < df.loc[idx,"Price"] < df.loc[idx,"Open"] and\
+            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]):
             red_start.append(idx)
-        elif df.loc[idx,'Price'] < df.loc[idx,'LS_B'] < df.loc[idx,'Open'] < df.loc[idx,'LS_A'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_A'] < df.loc[idx,'Open'] < df.loc[idx,'LS_B'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_B'] < df.loc[idx,'LS_A'] < df.loc[idx,'Open'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_A'] < df.loc[idx,'LS_B'] < df.loc[idx,'Open'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_B'] < df.loc[idx-1,'Price'] < df.loc[idx,'LS_A'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_B'] < df.loc[idx,'LS_A'] < df.loc[idx-1,'Price'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_A'] < df.loc[idx-1,'Price'] < df.loc[idx,'LS_B'] or\
-            df.loc[idx,'Price'] < df.loc[idx,'LS_A'] < df.loc[idx,'LS_B'] < df.loc[idx-1,'Price']:
+        elif (df.loc[idx,"LS_A"] > df.loc[idx,"Open"] > df.loc[idx,"LS_B"] > df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"Open"] > df.loc[idx,"LS_A"] > df.loc[idx,"LS_B"] > df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"LS_A"] > df.loc[idx,"LS_B"] > df.loc[idx,"Open"] > df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"LS_A"] > df.loc[idx,"LS_B"] > df.loc[idx,"Price"] > df.loc[idx,"Open"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            (df.loc[idx,"LS_B"] > df.loc[idx,"Open"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"Open"] > df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Open"] > df.loc[idx,"Price"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]) or\
+            (df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] > df.loc[idx,"Open"] and\
+            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]):
             blue_start.append(idx)
         elif df.loc[idx,'BOLU'] > df.loc[idx-1,'BOLU'] and df.loc[idx,'BOLU'] > df.loc[idx+1,'BOLU']:
             red_end_prev.append(idx)
@@ -187,7 +203,7 @@ df.to_excel('for graph, '+file+'.xlsx')
 plt.figure(figsize=(20, 10))
 
 date=df['Date'][:last_idx+1]
-plt.plot(date, df['Price'][:last_idx+1], label='Price', color='navy')
+plt.plot(date, df['Price'][:last_idx+1], label='Price', color='navy', lw=0.6)
 plt.plot(date, df['SMA-ML'][:last_idx+1], label='SMA-ML', color='green', linestyle='--')
 plt.plot(date, df['SMA-UL'][:last_idx+1], label='SMA-UL', color='red')
 plt.plot(date, df['SMA-LL'][:last_idx+1], label='SMA-LL', color='blue')
@@ -200,21 +216,21 @@ plt.fill_between(date, LS_A, LS_B, where=(LS_A >= LS_B), color='orange', alpha=0
 plt.fill_between(date, LS_A, LS_B, where=(LS_A < LS_B), color='skyblue', alpha=0.3, interpolate=True)
 
 plt.plot(date, df['BOLM'][:last_idx+1], label='BB_M', color='green', ls="--", lw=0.4, alpha=0.6)
-plt.plot(date, df['BOLU'][:last_idx+1], label='BB_U', color='red', lw=0.4)
-plt.plot(date, df['BOLD'][:last_idx+1], label='BB_D', color='blue', lw=0.4)
+plt.plot(date, df['BOLU'][:last_idx+1], label='BB_U', color='red', lw=0.4, alpha=0.8)
+plt.plot(date, df['BOLD'][:last_idx+1], label='BB_D', color='blue', lw=0.4, alpha=0.8)
 
 for i in range(0, len(red_start)):
     plt.axvspan(date[red_start[i]], date[red_end[i]], alpha=0.3, color='red')
-    plt.hlines(max(df.loc[red_start[i]:red_end[i], 'Price']), date[red_start[i]], date[red_end[i]], color='green')
+    plt.hlines(max(df.loc[red_start[i]:red_end[i], 'Price']), date[red_start[i]], date[red_end[i]], color='green', lw=0.7)
     plt.text(date[red_start[i]], max(df.loc[red_start[i]:red_end[i], 'Price'])+1, max(df.loc[red_start[i]:red_end[i], 'Price']),\
          ha='left', alpha=0.5)
 for i in range(0, len(blue_start)):
     plt.axvspan(date[blue_start[i]], date[blue_end[i]], alpha=0.3, color='blue')
-    plt.hlines(min(df.loc[blue_start[i]:blue_end[i], 'Price']), date[blue_start[i]], date[blue_end[i]], color='yellow')
+    plt.hlines(min(df.loc[blue_start[i]:blue_end[i], 'Price']), date[blue_start[i]], date[blue_end[i]], color='yellow', lw=0.7)
     plt.text(date[blue_start[i]], min(df.loc[blue_start[i]:blue_end[i], 'Price'])-2.5, min(df.loc[blue_start[i]:blue_end[i], 'Price']),\
          ha='center', alpha=0.5)
 
-plt.title(f'GOOGL, for {last_idx+1}days', fontsize=20)
+plt.title(f'Alphabet Inc. Class A, for {last_idx+1}days', fontsize=20)
 # plt.xticks([0, last_idx])
 plt.grid(axis='y')
 plt.legend()
