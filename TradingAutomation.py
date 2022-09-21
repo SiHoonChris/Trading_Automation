@@ -101,38 +101,38 @@ def color_column(last_idx):
 
     for idx in range(1, last_idx):
         if (df.loc[idx,"LS_B"] < df.loc[idx,"Open"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"Open"] < df.loc[idx,"LS_B"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"LS_B"] < df.loc[idx,"LS_A"] < df.loc[idx,"Open"] < df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"LS_B"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] < df.loc[idx,"Open"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"LS_A"] < df.loc[idx,"Open"] < df.loc[idx,"LS_B"] < df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"Open"] < df.loc[idx,"LS_A"] < df.loc[idx,"LS_B"] < df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"LS_A"] < df.loc[idx,"LS_B"] < df.loc[idx,"Open"] < df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"LS_A"] < df.loc[idx,"LS_B"] < df.loc[idx,"Price"] < df.loc[idx,"Open"] and\
-            df.loc[idx-1,"Price"] < df.loc[idx-1,"LS_B"]):
+            df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_B"]):
             red_start.append(idx)
         elif (df.loc[idx,"LS_A"] > df.loc[idx,"Open"] > df.loc[idx,"LS_B"] > df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"Open"] > df.loc[idx,"LS_A"] > df.loc[idx,"LS_B"] > df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"LS_A"] > df.loc[idx,"LS_B"] > df.loc[idx,"Open"] > df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"LS_A"] > df.loc[idx,"LS_B"] > df.loc[idx,"Price"] > df.loc[idx,"Open"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_B"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_B"]) or\
             (df.loc[idx,"LS_B"] > df.loc[idx,"Open"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"Open"] > df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Open"] > df.loc[idx,"Price"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]) or\
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_A"]) or\
             (df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] > df.loc[idx,"Open"] and\
-            df.loc[idx-1,"Price"] > df.loc[idx-1,"LS_A"]):
+            df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_A"]):
             blue_start.append(idx)
         elif df.loc[idx,'BOLU'] > df.loc[idx-1,'BOLU'] and df.loc[idx,'BOLU'] > df.loc[idx+1,'BOLU']:
             red_end_prev.append(idx)
@@ -176,8 +176,8 @@ def color_column(last_idx):
     return red_start, red_end, blue_start, blue_end
 
 
-# 데이터 생성
-file='GOOGL 19.09.13~22.09.12'  # investing.com
+# DATA
+file='AAPL'  # investing.com
 df = pd.read_excel(file+'.xlsx')
 last_idx = trim(df)
 for i in range(1, 26):
@@ -195,11 +195,38 @@ ichimoku.LeadingSpan_B()
 BB_Band(20, 2, last_idx)
 red_start, red_end, blue_start, blue_end = color_column(last_idx)
 
+# print(red_start)
+# print(red_end)
+# print(blue_start)
+# print(blue_end)
+
+# Overlapped Columns => Whatever the color is, leave the last one or the one with wider range
+for r in range(0, len(red_start)):
+    for b in range(0, len(blue_start)):
+        if red_start[r] < blue_end[b] < red_end[r]:
+            blue_start[b]=0
+            blue_end[b]=0
+        elif blue_start[b] < red_end[r] < blue_end[b]:
+            red_start[r]=0
+            red_end[r]=0
+        elif b>=1 and blue_end[b-1]==blue_end[b]:
+            blue_start[b]=0
+            blue_end[b]=0
+        elif r>=1 and red_end[r-1]==red_end[r]:
+            red_start[r]=0
+            red_end[r]=0
+        
+# print(red_start)
+# print(red_end)
+# print(blue_start)
+# print(blue_end)
+
+
 print(df)
-df.to_excel('for graph, '+file+'.xlsx')
+df.to_excel('graph, '+file+'.xlsx')
 
 
-# 데이터 시각화
+# GRAPH
 plt.figure(figsize=(20, 10))
 
 date=df['Date'][:last_idx+1]
@@ -230,9 +257,9 @@ for i in range(0, len(blue_start)):
     plt.text(date[blue_start[i]], min(df.loc[blue_start[i]:blue_end[i], 'Price'])-2.5, min(df.loc[blue_start[i]:blue_end[i], 'Price']),\
          ha='center', alpha=0.5)
 
-plt.title(f'Alphabet Inc. Class A, for {last_idx+1}days', fontsize=20)
-# plt.xticks([0, last_idx])
+plt.title(f'AAPL, for {last_idx+1}days', fontsize=20)
+plt.xticks([0, last_idx])
 plt.grid(axis='y')
 plt.legend()
 
-plt.savefig('for graph, '+file+'.png', dpi=150)
+plt.savefig('graph, '+file+'.png', dpi=150)
