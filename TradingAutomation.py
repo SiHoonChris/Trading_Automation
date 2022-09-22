@@ -199,8 +199,8 @@ red_start, red_end, blue_start, blue_end = color_column(last_idx)
 # print(red_end)
 # print(blue_start)
 # print(blue_end)
+# print("---")
 
-# Overlapped Columns => Whatever the color is, leave the last one or the one with wider range
 for r in range(0, len(red_start)):
     for b in range(0, len(blue_start)):
         if red_start[r] < blue_end[b] < red_end[r]:
@@ -209,18 +209,29 @@ for r in range(0, len(red_start)):
         elif blue_start[b] < red_end[r] < blue_end[b]:
             red_start[r]=0
             red_end[r]=0
-        elif b>=1 and blue_end[b-1]==blue_end[b]:
-            blue_start[b]=0
-            blue_end[b]=0
-        elif r>=1 and red_end[r-1]==red_end[r]:
-            red_start[r]=0
-            red_end[r]=0
-        
+
 # print(red_start)
 # print(red_end)
 # print(blue_start)
 # print(blue_end)
+# print("---")
 
+for r1 in range(0, len(red_start)):
+    for r2 in range(0, len(red_start)):
+        if r1<r2 and red_end[r1]==red_end[r2]:
+            red_start[r2]=0
+            red_end[r2]=0
+for b1 in range(0, len(blue_start)):
+    for b2 in range(0, len(blue_start)):
+        if b1<b2 and blue_end[b1]==blue_end[b2]:
+            blue_start[b2]=0
+            blue_end[b2]=0        
+
+# print(red_start)
+# print(red_end)
+# print(blue_start)
+# print(blue_end)
+# print("---")
 
 print(df)
 df.to_excel('graph, '+file+'.xlsx')
