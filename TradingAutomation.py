@@ -141,6 +141,13 @@ def color_column(last_idx):
         else:
             pass
 
+# 1)<Start list 안의 index 갯수>가 2)<End list 안의 index 갯수>보다 1개 더 클 수 있고, 그 이상이 될 수도 있는데
+# 지금 코드에서는 1)이 2)보다 1개 더 많은 경우 밖에 커버 못함
+    for m in range(0,len(red_start)):
+        for n in range(0, len(red_end_prev)):
+            if red_start[m] < red_end_prev(n):
+                pass
+
     if red_start[-1] < red_end_prev[-1]:
         for i in range(0, len(red_start)):
             n=0
@@ -174,10 +181,30 @@ def color_column(last_idx):
         blue_end.append(blue_start[len(blue_start)-1])
 
     return red_start, red_end, blue_start, blue_end
+def Remove_Overlaps():
+    for r in range(0, len(red_start)):
+        for b in range(0, len(blue_start)):
+            if red_start[r] < blue_end[b] < red_end[r]:
+                blue_start[b]=0
+                blue_end[b]=0
+            elif blue_start[b] < red_end[r] < blue_end[b]:
+                red_start[r]=0
+                red_end[r]=0
+    for r1 in range(0, len(red_start)):
+        for r2 in range(0, len(red_start)):
+            if r1<r2 and red_end[r1]==red_end[r2]:
+                red_start[r2]=0
+                red_end[r2]=0
+    for b1 in range(0, len(blue_start)):
+        for b2 in range(0, len(blue_start)):
+            if b1<b2 and blue_end[b1]==blue_end[b2]:
+                blue_start[b2]=0
+                blue_end[b2]=0  
+
 
 
 # DATA
-file='AAPL'  # investing.com
+file='MSFT'  # investing.com
 df = pd.read_excel(file+'.xlsx')
 last_idx = trim(df)
 for i in range(1, 26):
@@ -194,44 +221,7 @@ ichimoku.LeadingSpan_A()
 ichimoku.LeadingSpan_B()
 BB_Band(20, 2, last_idx)
 red_start, red_end, blue_start, blue_end = color_column(last_idx)
-
-# print(red_start)
-# print(red_end)
-# print(blue_start)
-# print(blue_end)
-# print("---")
-
-for r in range(0, len(red_start)):
-    for b in range(0, len(blue_start)):
-        if red_start[r] < blue_end[b] < red_end[r]:
-            blue_start[b]=0
-            blue_end[b]=0
-        elif blue_start[b] < red_end[r] < blue_end[b]:
-            red_start[r]=0
-            red_end[r]=0
-
-# print(red_start)
-# print(red_end)
-# print(blue_start)
-# print(blue_end)
-# print("---")
-
-for r1 in range(0, len(red_start)):
-    for r2 in range(0, len(red_start)):
-        if r1<r2 and red_end[r1]==red_end[r2]:
-            red_start[r2]=0
-            red_end[r2]=0
-for b1 in range(0, len(blue_start)):
-    for b2 in range(0, len(blue_start)):
-        if b1<b2 and blue_end[b1]==blue_end[b2]:
-            blue_start[b2]=0
-            blue_end[b2]=0        
-
-# print(red_start)
-# print(red_end)
-# print(blue_start)
-# print(blue_end)
-# print("---")
+Remove_Overlaps()   
 
 print(df)
 df.to_excel('graph, '+file+'.xlsx')
@@ -268,7 +258,7 @@ for i in range(0, len(blue_start)):
     plt.text(date[blue_start[i]], min(df.loc[blue_start[i]:blue_end[i], 'Price'])-2.5, min(df.loc[blue_start[i]:blue_end[i], 'Price']),\
          ha='center', alpha=0.5)
 
-plt.title(f'AAPL, for {last_idx+1}days', fontsize=20)
+plt.title(f'MSFT, for {last_idx+1}days', fontsize=20)
 plt.xticks([0, last_idx])
 plt.grid(axis='y')
 plt.legend()
