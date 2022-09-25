@@ -114,10 +114,40 @@ SEQUENCE of DEVELOPMENT
                 Make your decision using the last one. 
 
 2.  Think of the Proper Strategy with the Tool
-   2-1.  When to BUY & SELL
-
+   2-1.  Strategy A (09.24.2022)
+      2-1-a.  Will it be effective?
+         a-1.  I have an idea that this stategy or way of selling and buying an asset will be effective for adjusting proportions
+               of assets in one portfolio. So that the expected yield rate of one portfolio will be robust steadily and managed securely.  
+      2-1-b.  When to buy/sell
+         b-1.  When the "Green" Horizontal_line is drawn with "Red"_Column, and it is "higher" than SMA_UpperLine
+                Buy, 25% of Hold
+                ( 1) if the "Price" become higher than the Horizontal_line out of the column )
+                ( 2) if 1) isn't conducted before new column being started to be drawn, ignore the most previous Horizontal_line )
+         b-2.  When the "Green" Horizontal_line is drawn with "Red"_Column, and it is "lower" than SMA_LowerLine
+                Buy, 50% of Hold
+                ( 1) if the "Price" become higher than the Horizontal_line out of the column )
+                ( 2) if 1) isn't conducted before new column being started to be drawn, ignore the most previous Horizontal_line )
+         b-3.  When the "Yellow" Horizontal_line is drawn with "Blue"_Column, and it is "higher" than SMA_UpperLine
+                Sell, 25% of Hold
+                ( 1) if the "Price" become lower than the Horizontal_line out of the column )
+                ( 2) if 1) isn't conducted before new column being started to be drawn, ignore the most previous Horizontal_line )
+         b-4.  When the "Yellow" Horizontal_line is drawn with "Blue"_Column, and it is "lower" than SMA_LowerLine
+                Sell, 50% of Hold
+                ( 1) if the "Price" become lower than the Horizontal_line out of the column )
+                ( 2) if 1) isn't conducted before new column being started to be drawn, ignore the most previous Horizontal_line )
+         b-5.  Whatever the color of it is, when the Horizontal_line is drawn in SMA_Band area
+                Buy, 25% of Hold
+                ( 1) if the "Price" become higher than SMA_UpperLine out of the column )
+                ( 2) if 1) isn't conducted before new column being started to be drawn, ignore the most previous Horizontal_line )
+                Sell, 25% of Hold
+                ( 1) if the "Price" become lower than SMA_LowerLine out of the column )
+                ( 2) if 1) isn't conducted before new column being started to be drawn, ignore the most previous Horizontal_line )
 
 3. Back-Test
+   3-1.  Strategy A (09.24.2022)
+      3-1-a.  BLK (BlackRock Inc.)
+      3-1-b.  SPY (SPDR, S&P 500 - ETF)
+      3-1-c.  MSFT (Microsoft Co.)
 
 
 4. Apply new tool to trade (for real) 
@@ -131,3 +161,5 @@ HISTORY
 09-21-2022  ADDITIONAL EDITING ON PENETRATING SITUATION
             REMOVING OVERLAPPED COLUMNS
 09-22-2022  ADDITIONAL EDITING ON REMOVING OVERLAPPED COLUMNS
+09-25-2022  FIND ERROR ; [ list index out of range ]
+            (WHEN THE NUMBER OF START_LINE IS BIGGER THAN THE NUMBER OF END_LINE AND THE DIFFERENCE IS LARGER THAN ONE)
