@@ -114,7 +114,7 @@ SEQUENCE of DEVELOPMENT
                 Make your decision using the last one. 
 
 2.  Think of the Proper Strategy with the Tool
-   2-1.  Strategy A (09.24.2022)
+   2-1.  Strategy A (09.24.2022) - IGNORE THIS! MAKE NEW ONE!
       2-1-a.  Will it be effective?
          a-1.  I have an idea that this stategy or way of selling and buying an asset will be effective for adjusting proportions
                of assets in one portfolio. So that the expected yield rate of one portfolio will be robust steadily and managed securely.  
@@ -163,3 +163,7 @@ HISTORY
 09-22-2022  ADDITIONAL EDITING ON REMOVING OVERLAPPED COLUMNS
 09-25-2022  FIND ERROR ; [ list index out of range ]
             (WHEN THE NUMBER OF START_LINE IS BIGGER THAN THE NUMBER OF END_LINE AND THE DIFFERENCE IS LARGER THAN ONE)
+10-03-2022  ERROR(09-25-2022) HAS BEEN SOLVED
+            THINGS TO DO
+            1) SOLVE THE ERRORS HAPPENED WHEN VIZUALIZATION
+            2) THINK OF PROPER STRATEGY USING THIS TOOL
