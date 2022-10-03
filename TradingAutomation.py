@@ -1,12 +1,16 @@
 from statistics import mean, pstdev
 import matplotlib.pyplot as plt
 import pandas as pd
+
 def trim(df):
     df.sort_index(ascending=False, inplace=True)
     df.reset_index(drop=True, inplace=True)
-    df.drop(columns=df.columns[5:], inplace=True) # 거래량, 등락률 제거
+    df.drop(columns=df.columns[5:], inplace=True)
     return df.index[-1]
-def SMA_ATR(period, last_idx): # period=250
+    # Turn the descending datas into ascending order
+    # Remain the Columns of Date, Price, Open, High, Low, and Remove the last(Vol., Change %)
+
+def SMA_ATR(period, last_idx): # period=250 (1-year)
     TR=[]
     for i in range(0, last_idx+1):
         if i==0:
@@ -29,8 +33,9 @@ def SMA_ATR(period, last_idx): # period=250
             df.loc[i,'SMA-ML']=df.loc[i-(period-1):i, 'Price'].mean()
             df.loc[i,'SMA-UL']=df.loc[i-(period-1):i, 'Price'].mean()+ATR[i]*2
             df.loc[i,'SMA-LL']=df.loc[i-(period-1):i, 'Price'].mean()-ATR[i]*2
-class Ichimoku():
-    def __init__(self, CL, BL, LS_B, last_idx):  # CL=9, BL=26, LS_B=52, last_idx=(df.index[-1], before its expansion)
+
+class Ichimoku(): # CL=9, BL=26, LS_B=52
+    def __init__(self, CL, BL, LS_B, last_idx): # last_idx = df.index[-1] #which is returned in 'trim'
         self.CL=CL-1
         self.BL=BL-1
         self.LS_B=LS_B-1
@@ -51,7 +56,7 @@ class Ichimoku():
                 min_value=min(min(df.loc[i-self.BL:i, 'Price']), min(df.loc[i-self.BL:i, 'Open']),\
                      min(df.loc[i-self.BL:i, 'High']), min(df.loc[i-self.BL:i, 'Low']))
                 df.loc[i,'BL']=(max_value+min_value)/2
-    def LeadingSpan_A(self):  # 당일 포함해서 26일 선행
+    def LeadingSpan_A(self): # Count 26-day including the start-day
         CL_dict={}
         for i in df.index:
             if self.CL <= i <= self.last_idx:
@@ -71,7 +76,7 @@ class Ichimoku():
         for i in df.index:
             if self.BL <= i <= self.last_idx:
                 df.loc[i+25,'LS_A']=(CL_dict.get(i)+BL_dict.get(i))/2
-    def LeadingSpan_B(self):  # 당일 포함해서 26일 선행
+    def LeadingSpan_B(self): # Count 26-day including the start-day
         for i in df.index:
             if self.LS_B <= i <= self.last_idx:
                 max_value=max(max(df.loc[i-self.LS_B:i, 'Price']), max(df.loc[i-self.LS_B:i, 'Open']),\
@@ -79,7 +84,8 @@ class Ichimoku():
                 min_value=min(min(df.loc[i-self.LS_B:i, 'Price']), min(df.loc[i-self.LS_B:i, 'Open']),\
                      min(df.loc[i-self.LS_B:i, 'High']), min(df.loc[i-self.LS_B:i, 'Low']))
                 df.loc[i+25, 'LS_B']=(max_value+min_value)/2
-def BB_Band(period, n, last_idx):  # period=20, n=2, 표준편차는 모집단(Population)에 대한 표준편차 사용
+
+def BB_Band(period, n, last_idx): # period=20, n=2
     TP=[]
     for i in range(0, last_idx+1):
         tp=(df.loc[i,'High']+df.loc[i,'Low']+df.loc[i,'Price'])/3
@@ -87,18 +93,14 @@ def BB_Band(period, n, last_idx):  # period=20, n=2, 표준편차는 모집단(P
     for i in range(0, last_idx+1):
         if i < (period-1):
             pass
-        else:
+        else: # Population Standard Deviation : pstdev
             df.loc[i,'BOLM']=mean(TP[i-(period-1):(i+1)])
             df.loc[i,'BOLU']=df.loc[i,'BOLM'] + pstdev(TP[i-(period-1):(i+1)])*n
             df.loc[i,'BOLD']=df.loc[i,'BOLM'] - pstdev(TP[i-(period-1):(i+1)])*n
+
 def color_column(last_idx):
     red_start=[]
-    red_end_prev=[]
-    red_end=[]
     blue_start=[]
-    blue_end_prev=[]
-    blue_end=[]
-
     for idx in range(1, last_idx):
         if (df.loc[idx,"LS_B"] < df.loc[idx,"Open"] < df.loc[idx,"LS_A"] < df.loc[idx,"Price"] and\
             df.loc[idx-1,"Price"] <= df.loc[idx-1,"LS_A"]) or\
@@ -134,54 +136,40 @@ def color_column(last_idx):
             (df.loc[idx,"LS_B"] > df.loc[idx,"LS_A"] > df.loc[idx,"Price"] > df.loc[idx,"Open"] and\
             df.loc[idx-1,"Price"] >= df.loc[idx-1,"LS_A"]):
             blue_start.append(idx)
-        elif df.loc[idx,'BOLU'] > df.loc[idx-1,'BOLU'] and df.loc[idx,'BOLU'] > df.loc[idx+1,'BOLU']:
-            red_end_prev.append(idx)
-        elif df.loc[idx,'BOLD'] < df.loc[idx-1,'BOLD'] and df.loc[idx,'BOLD'] < df.loc[idx+1,'BOLD']:
-            blue_end_prev.append(idx)
-        else:
-            pass
-
-# 1)<Start list 안의 index 갯수>가 2)<End list 안의 index 갯수>보다 1개 더 클 수 있고, 그 이상이 될 수도 있는데
-# 지금 코드에서는 1)이 2)보다 1개 더 많은 경우 밖에 커버 못함
-    for m in range(0,len(red_start)):
-        for n in range(0, len(red_end_prev)):
-            if red_start[m] < red_end_prev(n):
-                pass
-
-    if red_start[-1] < red_end_prev[-1]:
-        for i in range(0, len(red_start)):
-            n=0
-            while red_start[i] >= red_end_prev[n]:
-                n+=1
-                if red_start[i] < red_end_prev[n]:
-                    red_end.append(red_end_prev[n])
-    else:
-        for i in range(0, len(red_start)-1):
-            n=0
-            while red_start[i] >= red_end_prev[n]:
-                n+=1
-                if red_start[i] < red_end_prev[n]:
-                    red_end.append(red_end_prev[n])
-        red_end.append(red_start[len(red_start)-1])
-
-    if blue_start[-1] < blue_end_prev[-1]:
-        for i in range(0, len(blue_start)):
-            n=0
-            while blue_start[i] >= blue_end_prev[n]:
-                n+=1
-                if blue_start[i] < blue_end_prev[n]:
-                    blue_end.append(blue_end_prev[n])
-    else:
-        for i in range(0, len(blue_start)-1):
-            n=0
-            while blue_start[i] >= blue_end_prev[n]:
-                n+=1
-                if blue_start[i] < blue_end_prev[n]:
-                    blue_end.append(blue_end_prev[n])
-        blue_end.append(blue_start[len(blue_start)-1])
-
+    red_end=[]
+    blue_end=[]
+    # for "Red"
+    for n in range(0, len(red_start)):
+        for idx in range(1, last_idx):
+            if df.loc[idx,'BOLU'] > df.loc[idx-1,'BOLU'] and df.loc[idx,'BOLU'] > df.loc[idx+1,'BOLU']:
+                if red_start[n] <= idx:
+                    red_end.append(idx)
+                    break
+                else:
+                    continue
+    if len(red_start) > len(red_end):
+        for i in range(len(red_start)-len(red_end)):
+            red_end.append(red_start[len(red_start)-1])
+    # for "Blue"
+    for n in range(0, len(blue_start)):
+        for idx in range(1, last_idx):
+            if df.loc[idx,'BOLD'] < df.loc[idx-1,'BOLD'] and df.loc[idx,'BOLD'] < df.loc[idx+1,'BOLD']:
+                if blue_start[n] <= idx:
+                    blue_end.append(idx)
+                    break
+                else:
+                    continue
+    if len(blue_start) > len(blue_end):
+        for i in range(len(blue_start)-len(blue_end)):
+            blue_end.append(blue_start[len(blue_start)-1])
+    print(red_start)
+    print(red_end)
+    print(blue_start)
+    print(blue_end)
     return red_start, red_end, blue_start, blue_end
-def Remove_Overlaps():
+
+def Remove_Overlaps(): 
+    # when two columns in different colors are overlapped, the previous one is deleted 
     for r in range(0, len(red_start)):
         for b in range(0, len(blue_start)):
             if red_start[r] < blue_end[b] < red_end[r]:
@@ -190,6 +178,7 @@ def Remove_Overlaps():
             elif blue_start[b] < red_end[r] < blue_end[b]:
                 red_start[r]=0
                 red_end[r]=0
+    # when two columns in same color are overlapped, the later one is deleted 
     for r1 in range(0, len(red_start)):
         for r2 in range(0, len(red_start)):
             if r1<r2 and red_end[r1]==red_end[r2]:
@@ -199,18 +188,30 @@ def Remove_Overlaps():
         for b2 in range(0, len(blue_start)):
             if b1<b2 and blue_end[b1]==blue_end[b2]:
                 blue_start[b2]=0
-                blue_end[b2]=0  
+                blue_end[b2]=0
+    # when the 'start' and the 'end' are same so that it is not a column but a 'line', remover that line 
+    for i in range(0, len(red_start)):
+        if red_start[i]==red_end[i]:
+            red_start[i]=0
+            red_end[i]=0
+    for i in range(0, len(blue_start)):
+        if blue_start[i]==blue_end[i]:
+            blue_start[i]=0
+            blue_end[i]=0
+    print(red_start)
+    print(red_end)
+    print(blue_start)
+    print(blue_end)
 
 
-
-# DATA
-file='MSFT'  # investing.com
+# DATA Processing
+file='MSFT' #(http://investing.com)
 df = pd.read_excel(file+'.xlsx')
 last_idx = trim(df)
 for i in range(1, 26):
         df.loc[last_idx+i] = ['', '', '', '', '']
 
-column_heads=['SMA-ML', 'SMA-UL', 'SMA-LL', 'Decision', 'LS_A', 'LS_B', 'BOLM', 'BOLU', 'BOLD']
+column_heads=['SMA-ML', 'SMA-UL', 'SMA-LL', 'LS_A', 'LS_B', 'BOLM', 'BOLU', 'BOLD']
 for col in column_heads:
     df[col]=''
     df[col]=pd.to_numeric(df[col])
@@ -227,7 +228,7 @@ print(df)
 df.to_excel('graph, '+file+'.xlsx')
 
 
-# GRAPH
+# Visualization
 plt.figure(figsize=(20, 10))
 
 date=df['Date'][:last_idx+1]
