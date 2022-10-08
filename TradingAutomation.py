@@ -1,6 +1,7 @@
 from statistics import mean, pstdev
 import matplotlib.pyplot as plt
 import pandas as pd
+import openpyxl
 
 def trim(df):
     df.sort_index(ascending=False, inplace=True)
@@ -203,6 +204,13 @@ def Remove_Overlaps():
     print(blue_start)
     print(blue_end)
 
+def fileType_xticks(file, last_idx):
+    wb=openpyxl.load_workbook(file+'.xlsx')
+    ws=wb.active
+    if ws["A2"].number_format == 'General':
+        plt.xticks([0, last_idx])
+    else:
+        pass
 
 # DATA Processing
 file='MSFT' #(http://investing.com)
@@ -252,15 +260,15 @@ for i in range(0, len(red_start)):
     plt.axvspan(date[red_start[i]], date[red_end[i]], alpha=0.3, color='red')
     plt.hlines(max(df.loc[red_start[i]:red_end[i], 'Price']), date[red_start[i]], date[red_end[i]], color='green', lw=0.7)
     plt.text(date[red_start[i]], max(df.loc[red_start[i]:red_end[i], 'Price'])+1, max(df.loc[red_start[i]:red_end[i], 'Price']),\
-         ha='left', alpha=0.5)
+             ha='left', alpha=0.5)
 for i in range(0, len(blue_start)):
     plt.axvspan(date[blue_start[i]], date[blue_end[i]], alpha=0.3, color='blue')
     plt.hlines(min(df.loc[blue_start[i]:blue_end[i], 'Price']), date[blue_start[i]], date[blue_end[i]], color='yellow', lw=0.7)
     plt.text(date[blue_start[i]], min(df.loc[blue_start[i]:blue_end[i], 'Price'])-2.5, min(df.loc[blue_start[i]:blue_end[i], 'Price']),\
-         ha='center', alpha=0.5)
+         ha='left', alpha=0.5)
 
 plt.title(f'MSFT, for {last_idx+1}days', fontsize=20)
-plt.xticks([0, last_idx])
+fileType_xticks(file, last_idx)
 plt.grid(axis='y')
 plt.legend()
 
