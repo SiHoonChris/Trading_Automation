@@ -163,14 +163,15 @@ def color_column(last_idx):
     if len(blue_start) > len(blue_end):
         for i in range(len(blue_start)-len(blue_end)):
             blue_end.append(blue_start[len(blue_start)-1])
-    print(red_start)
-    print(red_end)
-    print(blue_start)
-    print(blue_end)
+    # print(red_start)
+    # print(red_end)
+    # print(blue_start)
+    # print(blue_end)
     return red_start, red_end, blue_start, blue_end
 
 def Remove_Overlaps(): 
-    # when two columns in different colors are overlapped, the previous one is deleted 
+    # when two columns in different colors are overlapped
+    # the previous one is deleted ; turned into 'Zero'
     for r in range(0, len(red_start)):
         for b in range(0, len(blue_start)):
             if red_start[r] < blue_end[b] < red_end[r]:
@@ -179,7 +180,8 @@ def Remove_Overlaps():
             elif blue_start[b] < red_end[r] < blue_end[b]:
                 red_start[r]=0
                 red_end[r]=0
-    # when two columns in same color are overlapped, the later one is deleted 
+    # when two columns in same color are overlapped(with different start point, same end point)
+    # the later one is deleted ; turned into 'Zero'
     for r1 in range(0, len(red_start)):
         for r2 in range(0, len(red_start)):
             if r1<r2 and red_end[r1]==red_end[r2]:
@@ -190,7 +192,8 @@ def Remove_Overlaps():
             if b1<b2 and blue_end[b1]==blue_end[b2]:
                 blue_start[b2]=0
                 blue_end[b2]=0
-    # when the 'start' and the 'end' are same so that it is not a column but a 'line', remover that line 
+    # when the 'start' and the 'end' are same so that it is not a column
+    # but a 'line', make'em into 'Zero'
     for i in range(0, len(red_start)):
         if red_start[i]==red_end[i]:
             red_start[i]=0
@@ -199,10 +202,23 @@ def Remove_Overlaps():
         if blue_start[i]==blue_end[i]:
             blue_start[i]=0
             blue_end[i]=0
-    print(red_start)
-    print(red_end)
-    print(blue_start)
-    print(blue_end)
+    # print(red_start)
+    # print(red_end)
+    # print(blue_start)
+    # print(blue_end)
+    # remove the 'Zero's in each lists
+    RedNBlue=[red_start, red_end, blue_start, blue_end]
+    for i in range(0, len(RedNBlue)):
+        cnt=0
+        for j in range(0, len(RedNBlue[i])):
+            if RedNBlue[i][j]==0:
+                cnt+=1
+        for k in range(0, cnt):
+            RedNBlue[i].remove(0)
+    # print(red_start)
+    # print(red_end)
+    # print(blue_start)
+    # print(blue_end)
 
 def fileType_xticks(file, last_idx):
     wb=openpyxl.load_workbook(file+'.xlsx')
@@ -212,8 +228,10 @@ def fileType_xticks(file, last_idx):
     else:
         pass
 
+
 # DATA Processing
-file='MSFT' #(http://investing.com)
+filename=input("=>  ")
+file=filename   # (http://investing.com)
 df = pd.read_excel(file+'.xlsx')
 last_idx = trim(df)
 for i in range(1, 26):
@@ -259,15 +277,15 @@ plt.plot(date, df['BOLD'][:last_idx+1], label='BB_D', color='blue', lw=0.4, alph
 for i in range(0, len(red_start)):
     plt.axvspan(date[red_start[i]], date[red_end[i]], alpha=0.3, color='red')
     plt.hlines(max(df.loc[red_start[i]:red_end[i], 'Price']), date[red_start[i]], date[red_end[i]], color='green', lw=0.7)
-    plt.text(date[red_start[i]], max(df.loc[red_start[i]:red_end[i], 'Price'])+1, max(df.loc[red_start[i]:red_end[i], 'Price']),\
-             ha='left', alpha=0.5)
+    plt.text(date[red_start[i]], max(df.loc[red_start[i]:red_end[i], 'Price']), max(df.loc[red_start[i]:red_end[i], 'Price']),\
+             ha='left', fontsize=8, color='green', alpha=0.7)
 for i in range(0, len(blue_start)):
     plt.axvspan(date[blue_start[i]], date[blue_end[i]], alpha=0.3, color='blue')
     plt.hlines(min(df.loc[blue_start[i]:blue_end[i], 'Price']), date[blue_start[i]], date[blue_end[i]], color='yellow', lw=0.7)
-    plt.text(date[blue_start[i]], min(df.loc[blue_start[i]:blue_end[i], 'Price'])-2.5, min(df.loc[blue_start[i]:blue_end[i], 'Price']),\
-         ha='left', alpha=0.5)
+    plt.text(date[blue_start[i]], min(df.loc[blue_start[i]:blue_end[i], 'Price']), min(df.loc[blue_start[i]:blue_end[i], 'Price']),\
+         ha='left', fontsize=8, color='yellow', alpha=0.7)
 
-plt.title(f'MSFT, for {last_idx+1}days', fontsize=20)
+plt.title(f'{file}, for {last_idx+1}days', fontsize=20)
 fileType_xticks(file, last_idx)
 plt.grid(axis='y')
 plt.legend()
