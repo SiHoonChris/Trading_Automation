@@ -170,30 +170,60 @@ def color_column(last_idx):
     return red_start, red_end, blue_start, blue_end
 
 def Remove_Overlaps(): 
-    # when two columns in different colors are overlapped
-    # the previous one is deleted ; turned into 'Zero'
+    # when two columns in different colors are overlapped : the previous one is deleted ; turned into 'Zero'
     for r in range(0, len(red_start)):
         for b in range(0, len(blue_start)):
+            # 1) (Blue Start)-(Red Start)-(Blue End)-(Red End) or (Red Start)-(Blue Start)-(Red End)-(Blue End)
             if red_start[r] < blue_end[b] < red_end[r]:
                 blue_start[b]=0
                 blue_end[b]=0
             elif blue_start[b] < red_end[r] < blue_end[b]:
                 red_start[r]=0
                 red_end[r]=0
-    # when two columns in same color are overlapped(with different start point, same end point)
-    # the later one is deleted ; turned into 'Zero'
+            # 2) (Red and Blue Start)-(Red or Blue End)-(Blue or Red End)
+            #     Blue Start & Red Start cannot happen simultaneously
+            # 3) (Blue Start)-(Red Start)-(Red End)-(Blue End) or (Red Start)-(Blue Start)-(Blue End)-(Red End)
+            # 4) (Blue Start)-(Red Start)-(Blue and Red End) or (Red Start)-(Blue Start)-(Red and Blue End)
+            elif red_start[r] < blue_start[b] < blue_end[b] <= red_end[r]:
+                red_start[r]=0
+                red_end[r]=0
+            elif blue_start[b] < red_start[r] < red_end[r] <= blue_end[b]:
+                blue_start[b]=0
+                blue_end[b]=0
+            else:
+                pass
+    # when two columns in same color are overlapped : the later one is deleted ; turned into 'Zero'
+    # when the color is red;
     for r1 in range(0, len(red_start)):
         for r2 in range(0, len(red_start)):
-            if r1<r2 and red_end[r1]==red_end[r2]:
+            # 1) (1_start)-(2_start)-(1_end)-(2_end)
+            if r1<r2 and red_start[r2] < red_end[r1] < red_end[r2]:
                 red_start[r2]=0
                 red_end[r2]=0
+            # 2) same start & different end => impossible
+            # 3) (1_start)-(2_start)-(2_end)-(1_end)
+            # 4) different start point & same end point
+            elif r1<r2 and red_start[r1] < red_start[r2] < red_end[r2] <= red_end[r1]:
+                red_start[r2]=0
+                red_end[r2]=0
+            else:
+                pass
+    # when the color is blue;
     for b1 in range(0, len(blue_start)):
         for b2 in range(0, len(blue_start)):
-            if b1<b2 and blue_end[b1]==blue_end[b2]:
+            # 1) (1_start)-(2_start)-(1_end)-(2_end)
+            if b1<b2 and blue_start[b2] < blue_end[b1] < blue_end[b2]:
                 blue_start[b2]=0
                 blue_end[b2]=0
-    # when the 'start' and the 'end' are same so that it is not a column
-    # but a 'line', make'em into 'Zero'
+            # 2) same start & different end => impossible
+            # 3) (1_start)-(2_start)-(2_end)-(1_end)
+            # 4) different start point & same end point
+            elif b1<b2 and blue_start[b1] < blue_start[b2] < blue_end[b2] <= blue_end[b1]:
+                blue_start[b2]=0
+                blue_end[b2]=0
+            else:
+                pass
+    # when the 'start' and the 'end' are same so that it is not a column but a 'line', make'em into 'Zero'
     for i in range(0, len(red_start)):
         if red_start[i]==red_end[i]:
             red_start[i]=0
@@ -206,8 +236,7 @@ def Remove_Overlaps():
     # print(red_end)
     # print(blue_start)
     # print(blue_end)
-    # remove the 'Zero's in each lists
-    RedNBlue=[red_start, red_end, blue_start, blue_end]
+    RedNBlue=[red_start, red_end, blue_start, blue_end]  # remove the 'Zero's in each lists
     for i in range(0, len(RedNBlue)):
         cnt=0
         for j in range(0, len(RedNBlue[i])):
