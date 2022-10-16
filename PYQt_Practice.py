@@ -5,38 +5,54 @@
 # 학습자료2 (초보자를 위한 Python GUI 프로그래밍 - PyQt5)
 # https://wikidocs.net/book/2944
 # 학습자료3 (파이썬으로 배우는 알고리즘 트레이딩 (개정판-2쇄))
-# [12. 키움증권 API의 3) 기초 API 익히기] 부터 다시 학습 시작할 것!
 # https://wikidocs.net/4236
+# 학습자료4 (키움 OpenAPI+ 파이썬 개발가이드)
+# https://wikidocs.net/book/8107
+# 참고자료 (키움 OpenAPI+ 개발가이드)
+# https://download.kiwoom.com/web/openapi/kiwoom_openapi_plus_devguide_ver_1.1.pdf
 
-
-import sys 
+import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QAxContainer import *
 
-# 화면에 출력될 객체
-class MyWindow(QMainWindow):  # MyWindow클래스가 QMainWindow클래스를 상속
-                              # 다른 위젯에 포함되지 않은 최상위 위젯을 window라고 함
-                              # 윈도우를 생성하기 위한 클래스로 QMainWindow나 QDialog 사용
+class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("윈도우~~~")       # 윈도우의 제목 설정
-        self.setGeometry(300, 300, 300, 400) # 윈도우의 위치 및 크기 조절
+        self.setWindowTitle("Main Window")
+        self.setGeometry(300, 300, 300, 150)
 
-        btn1=QPushButton("Click(버튼)", self)   # 윈도우 안의 버튼 생성
-        btn1.move(20, 20)                    # 버튼의 출력 위치
+        # 파이썬에서 키움증권의 클래스 사용하려면 'QAxWidget' 사용해 객체 생성해야 함
+        # 키움증권 제공 클래스는 고유의 CLSID(16진수) 또는 ProgID(문자열) 가짐, 이를 'QAxWidget'의 생성자로 전달하면 인스턴스 생성
+        # 당연히 ProgID 활용하는 것이 편리함 
+        # 레지스트리 편집기 활용, 검색
+        # > ProgID : KHOPENAPI.KHOpenAPICtrl.1
+        # > CLSID : {A1574A0D-6BFA-4BD7-9020-DED88711818D}
+        self.kiwoom=QAxWidget("KHOPENAPI.KHOpenAPICtrl.1")
+
+        btn1=QPushButton("LOG-IN", self)
+        btn1.move(20, 20)
         btn1.clicked.connect(self.btn1_clicked)
     
-    def btn1_clicked(self): # 이벤트 처리 메서드
-        QMessageBox.about(self, "message(창)", "clicked(눌림)")
-        # 이벤트 : 사용자가 버튼 클릭
-        # 이벤트 처리 : "message"라는 제목의 새 팝업창, "cliked" 출력(이벤트에 대한 새로운 이벤트 발생)
+        btn2=QPushButton("Check State", self)
+        btn2.move(20, 70)
+        btn2.clicked.connect(self.btn2_clicked)
 
-# 이벤트 루프
+    def btn1_clicked(self):
+        # CommConnect : OpenAPI가 제공하는 메서드(로그인 윈도우 실행)
+        # CommConnect 메서드 이용하려면 kiwoom(객체) 사용하여 dynamicCall 메서드 호출
+        # ( OCX방식에서의 호출 방식임 )
+        ret = self.kiwoom.dynamicCall("CommConnect")
+
+    def btn2_clicked(self):
+        # GetConnectState : OpenAPI가 제공하는 메서드(서버 접속상태 확인)
+        if self.kiwoom.dynamicCall("GetConnectState()")==0:
+            self.statusBar().showMessage("Not connected")
+        else:
+            self.statusBar().showMessage("Connected")
+
 if __name__ == "__main__":
-    app = QApplication(sys.argv)  # 객체(app) 생성
-    window = MyWindow()           # 객체(window) 생성
-    window.show()                 # window 화면에 출력
-    app.exec_()                   # app 종료(execute)
-
-# label = QLabel("Hello PyQt")
-# label.show()
+    app = QApplication(sys.argv)
+    window = MyWindow()
+    window.show()
+    app.exec_()
